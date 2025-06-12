@@ -1,10 +1,13 @@
 package by.belpost.qrmodule.model.parcel;
 
+import by.belpost.qrmodule.utils.QRCodeGenerator;
+import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,7 +20,13 @@ public class ParcelController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Parcel>> getParcels(){
+    public ResponseEntity<List<Parcel>> getParcels() throws IOException, WriterException {
+        List<Parcel> parcels = parcelService.getParcels();
+        if(parcels.size() != 0){
+            for (Parcel parcel: parcels){
+                QRCodeGenerator.generateQRCode(parcel);
+            }
+        }
         return ResponseEntity.ok(parcelService.getParcels());
     }
 
