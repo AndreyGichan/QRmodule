@@ -39,4 +39,22 @@ public class QRCodeGenerator {
         Path path = FileSystems.getDefault().getPath(qrCodeName);
         MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
     }
+
+    public static void generateCustomQRCode(String content, String format, String fileName) throws WriterException, IOException {
+        String qrCodePath = "D:\\javaProjects\\qrmodule\\qrcodes\\";
+        Files.createDirectories(Path.of(qrCodePath)); // создать папку, если нет
+
+        String outputFileName = (fileName != null && !fileName.isEmpty()) ? fileName : "CustomQRCode";
+        String extension = format != null ? format.toUpperCase() : "PNG";
+
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 400, 400, hints);
+
+        Path path = FileSystems.getDefault().getPath(qrCodePath + outputFileName + "." + extension.toLowerCase());
+        MatrixToImageWriter.writeToPath(bitMatrix, extension, path);
+    }
+
 }
