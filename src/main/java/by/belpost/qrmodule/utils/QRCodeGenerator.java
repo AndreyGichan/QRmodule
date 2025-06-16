@@ -7,7 +7,14 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -18,7 +25,7 @@ import java.util.Map;
 public class QRCodeGenerator {
     public static void generateQRCode(Parcel parcel) throws WriterException, IOException {
         String qrCodePath = "D:\\javaProjects\\qrmodule\\qrcodes\\";
-        Files.createDirectories(Path.of(qrCodePath)); // создать директорию, если нет
+        Files.createDirectories(Path.of(qrCodePath));
 
         String safeName = parcel.getSenderName().replaceAll("[^a-zA-Z0-9а-яА-Я]", "_");
         String qrCodeName = qrCodePath + parcel.getId() + "_" + safeName + "-QRCode.png";
@@ -29,7 +36,6 @@ public class QRCodeGenerator {
                 "Status: " + parcel.getStatus() + "\n" +
                 "Type: " + parcel.getType();
 
-        // Указываем кодировку UTF-8
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 
@@ -40,21 +46,63 @@ public class QRCodeGenerator {
         MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
     }
 
-    public static void generateCustomQRCode(String content, String format, String fileName) throws WriterException, IOException {
-        String qrCodePath = "D:\\javaProjects\\qrmodule\\qrcodes\\";
-        Files.createDirectories(Path.of(qrCodePath)); // создать папку, если нет
+    private static void writeSVG(BitMatrix matrix, Path path) throws IOException {
+        int width = matrix.getWidth();
+        int height = matrix.getHeight();
 
-        String outputFileName = (fileName != null && !fileName.isEmpty()) ? fileName : "CustomQRCode";
-        String extension = format != null ? format.toUpperCase() : "PNG";
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            writer.write(String.format(
+                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%d\" height=\"%d\" shape-rendering=\"crispEdges\">",
+                    width, height));
+            writer.write("<rect width=\"100%\" height=\"100%\" fill=\"white\"/>");
 
-        Map<EncodeHintType, Object> hints = new HashMap<>();
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (matrix.get(x, y)) {
+                        writer.write(String.format(
+                                "<rect x=\"%d\" y=\"%d\" width=\"1\" height=\"1\" fill=\"black\"/>", x, y));
+                    }
+                }
+            }
 
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 400, 400, hints);
+            writer.write("</svg>");
+        }
+    }
+    public static void generateCustomQRCode(String content, String format, String fileName)
+            throws WriterException, IOException {
 
-        Path path = FileSystems.getDefault().getPath(qrCodePath + outputFileName + "." + extension.toLowerCase());
-        MatrixToImageWriter.writeToPath(bitMatrix, extension, path);
+        String qrCodePath = "D:/javaProjects/qrmodule/qrcodes/";
+        Files.createDirectories(Path.of(qrCodePath));
+        String ext = (format == null || format.isEmpty()) ? "png" : format.toLowerCase();
+        String fullName = (fileName == null || fileName.isEmpty() ? "CustomQRCode" : fileName) + "." + ext;
+        Path outPath = Path.of(qrCodePath, fullName);
+
+        QRCodeWriter writer = new QRCodeWriter();
+        BitMatrix matrix = writer.encode(content, BarcodeFormat.QR_CODE, 400, 400,
+                Map.of(EncodeHintType.CHARACTER_SET, "UTF-8"));
+
+        switch (ext) {
+            case "png":
+                MatrixToImageWriter.writeToPath(matrix, "PNG", outPath);
+                break;
+            case "svg":
+                writeSVG(matrix, outPath);
+                break;
+            case "pdf":
+                BufferedImage image = MatrixToImageWriter.toBufferedImage(matrix);
+                try (PDDocument doc = new PDDocument()) {
+                    PDPage page = new PDPage();
+                    doc.addPage(page);
+                    PDImageXObject pdImage = LosslessFactory.createFromImage(doc, image);
+                    try (PDPageContentStream contentStream = new PDPageContentStream(doc, page)) {
+                        contentStream.drawImage(pdImage, 100, 400, 300, 300);
+                    }
+                    doc.save(outPath.toFile());
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Формат не поддерживается: " + ext);
+        }
     }
 
 }
