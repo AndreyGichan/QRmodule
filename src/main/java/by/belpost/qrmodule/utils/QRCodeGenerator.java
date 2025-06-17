@@ -68,14 +68,31 @@ public class QRCodeGenerator {
             writer.write("</svg>");
         }
     }
-    public static void generateCustomQRCode(String content, String format, String fileName)
+    private static Path resolveFilePath(String baseDir, String template, String fileName, String extension) throws IOException {
+        String subfolder = switch (template.toLowerCase()) {
+            case "parcel" -> "parcel";
+            case "link" -> "link";
+            case "custom" -> "custom";
+            default -> "others";
+        };
+
+        Path directory = Path.of(baseDir, subfolder);
+        Files.createDirectories(directory);
+
+        String safeName = (fileName == null || fileName.isBlank())
+                ? "qr_" + System.currentTimeMillis()
+                : fileName.replaceAll("[^a-zA-Z0-9а-яА-Я]", "_");
+
+        return directory.resolve(safeName + "." + extension.toLowerCase());
+    }
+    public static Path generateCustomQRCode(String content, String format, String fileName, String templateName)
             throws WriterException, IOException {
 
         String qrCodePath = "D:/javaProjects/qrmodule/qrcodes/";
         Files.createDirectories(Path.of(qrCodePath));
+
         String ext = (format == null || format.isEmpty()) ? "png" : format.toLowerCase();
-        String fullName = (fileName == null || fileName.isEmpty() ? "CustomQRCode" : fileName) + "." + ext;
-        Path outPath = Path.of(qrCodePath, fullName);
+        Path outPath = resolveFilePath(qrCodePath, templateName, fileName, ext);
 
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix matrix = writer.encode(content, BarcodeFormat.QR_CODE, 400, 400,
@@ -103,6 +120,7 @@ public class QRCodeGenerator {
             default:
                 throw new IllegalArgumentException("Формат не поддерживается: " + ext);
         }
+        return outPath;
     }
 
 }
