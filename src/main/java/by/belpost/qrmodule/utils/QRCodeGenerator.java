@@ -69,7 +69,8 @@ public class QRCodeGenerator {
         }
     }
     private static Path resolveFilePath(String baseDir, String template, String fileName, String extension) throws IOException {
-        String subfolder = switch (template.toLowerCase()) {
+        String templateSafe = (template == null) ? "" : template.toLowerCase();
+        String subfolder = switch (templateSafe) {
             case "parcel" -> "parcel";
             case "link" -> "link";
             case "custom" -> "custom";
