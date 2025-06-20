@@ -13,12 +13,12 @@ public class QRCodeMetadataService {
         this.repository = repository;
     }
 
-    public void saveMetadata(Integer parcelId, String path, String format, String template, String contentType) {
+    public void saveMetadata(String content, String path, String format,  String fileName, String contentType) {
         QRCodeMetadata meta = new QRCodeMetadata();
-        meta.setParcelId(parcelId);
+        meta.setContent(content);
         meta.setPath(path);
         meta.setFormat(format);
-        meta.setTemplate(template);
+        meta.setFileName(fileName);
         meta.setContentType(contentType);
         repository.save(meta);
     }

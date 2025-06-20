@@ -33,3 +33,5 @@ build/
 .vscode/
 
 /qrcodes/
+
+src/main/resources/application.properties

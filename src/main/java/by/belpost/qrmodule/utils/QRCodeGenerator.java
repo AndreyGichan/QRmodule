@@ -1,6 +1,5 @@
 package by.belpost.qrmodule.utils;
 
-import by.belpost.qrmodule.model.parcel.Parcel;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -23,29 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class QRCodeGenerator {
-    public static void generateQRCode(Parcel parcel) throws WriterException, IOException {
-        String qrCodePath = "D:\\javaProjects\\qrmodule\\qrcodes\\";
-        Files.createDirectories(Path.of(qrCodePath));
-
-        String safeName = parcel.getSenderName().replaceAll("[^a-zA-Z0-9а-яА-Я]", "_");
-        String qrCodeName = qrCodePath + parcel.getId() + "_" + safeName + "-QRCode.png";
-
-        String content = "ID: " + parcel.getId() + "\n" +
-                "Senddate: " + parcel.getSendDate() + "\n" +
-                "Sendername: " + parcel.getSenderName() + "\n" +
-                "Status: " + parcel.getStatus() + "\n" +
-                "Type: " + parcel.getType();
-
-        Map<EncodeHintType, Object> hints = new HashMap<>();
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 400, 400, hints);
-
-        Path path = FileSystems.getDefault().getPath(qrCodeName);
-        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-    }
-
     private static void writeSVG(BitMatrix matrix, Path path) throws IOException {
         int width = matrix.getWidth();
         int height = matrix.getHeight();
@@ -68,16 +44,9 @@ public class QRCodeGenerator {
             writer.write("</svg>");
         }
     }
-    private static Path resolveFilePath(String baseDir, String template, String fileName, String extension) throws IOException {
-        String templateSafe = (template == null) ? "" : template.toLowerCase();
-        String subfolder = switch (templateSafe) {
-            case "parcel" -> "parcel";
-            case "link" -> "link";
-            case "custom" -> "custom";
-            default -> "others";
-        };
+    private static Path resolveFilePath(String baseDir, String fileName, String extension) throws IOException {
 
-        Path directory = Path.of(baseDir, subfolder);
+        Path directory = Path.of(baseDir);
         Files.createDirectories(directory);
 
         String safeName = (fileName == null || fileName.isBlank())
@@ -86,14 +55,14 @@ public class QRCodeGenerator {
 
         return directory.resolve(safeName + "." + extension.toLowerCase());
     }
-    public static Path generateCustomQRCode(String content, String format, String fileName, String templateName)
+    public static Path generateCustomQRCode(String content, String format, String fileName)
             throws WriterException, IOException {
 
         String qrCodePath = "D:/javaProjects/qrmodule/qrcodes/";
         Files.createDirectories(Path.of(qrCodePath));
 
         String ext = (format == null || format.isEmpty()) ? "png" : format.toLowerCase();
-        Path outPath = resolveFilePath(qrCodePath, templateName, fileName, ext);
+        Path outPath = resolveFilePath(qrCodePath, fileName, ext);
 
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix matrix = writer.encode(content, BarcodeFormat.QR_CODE, 400, 400,

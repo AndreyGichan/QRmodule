@@ -9,49 +9,26 @@ public class QRCodeMetadata {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Integer parcelId;
-
-    private String path;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
-
+    @Column(columnDefinition = "TEXT")
+    private String content;
     private String format;
-
-    private String template;
-
+    private String fileName;
+    private String path;
     private String contentType;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
-    public Integer getParcelId() {
-        return parcelId;
+    public String getContent() {
+        return content;
     }
 
-    public void setParcelId(Integer parcelId) {
-        this.parcelId = parcelId;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getFormat() {
@@ -62,12 +39,20 @@ public class QRCodeMetadata {
         this.format = format;
     }
 
-    public String getTemplate() {
-        return template;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setTemplate(String template) {
-        this.template = template;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getContentType() {
@@ -76,5 +61,13 @@ public class QRCodeMetadata {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
