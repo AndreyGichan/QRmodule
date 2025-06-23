@@ -1,9 +1,9 @@
 package by.belpost.qrmodule.dto;
 
 public class QRCodeRequest {
-    private String content;    // содержимое для кодирования
-    private String format;     // PNG, SVG, PDF (на будущее)
-    private String fileName;   // имя файла, если нужно
+    private String content;
+    private String format;
+    private String fileName;
     private String contentType;
     public QRCodeRequest() {}
 

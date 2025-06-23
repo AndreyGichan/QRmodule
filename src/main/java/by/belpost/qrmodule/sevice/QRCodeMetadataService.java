@@ -4,6 +4,8 @@ import by.belpost.qrmodule.model.QRCodeMetadata;
 import by.belpost.qrmodule.model.QRCodeMetadataRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class QRCodeMetadataService {
 
@@ -20,6 +22,7 @@ public class QRCodeMetadataService {
         meta.setFormat(format);
         meta.setFileName(fileName);
         meta.setContentType(contentType);
+        meta.setCreatedAt(LocalDateTime.now().withNano(0));
         repository.save(meta);
     }
 }

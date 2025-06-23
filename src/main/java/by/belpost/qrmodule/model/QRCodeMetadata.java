@@ -15,7 +15,7 @@ public class QRCodeMetadata {
     private String fileName;
     private String path;
     private String contentType;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     public Long getId() {
         return id;
