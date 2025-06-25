@@ -1,7 +1,8 @@
 package by.belpost.qrmodule.controller;
 
 import by.belpost.qrmodule.model.QRCodeMetadata;
-import by.belpost.qrmodule.model.QRCodeMetadataRepository;
+import by.belpost.qrmodule.sevice.model.QRCodeMetadataServiceImpl;
+import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,15 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/qrcodes")
 public class QRCodeSearchController {
 
-    private final QRCodeMetadataRepository metadataRepository;
-
-    public QRCodeSearchController(QRCodeMetadataRepository metadataRepository) {
-        this.metadataRepository = metadataRepository;
-    }
+    private final QRCodeMetadataServiceImpl qrCodeMetadataService;
 
     @GetMapping("/search")
     public List<QRCodeMetadata> searchQRCodes(
@@ -30,7 +28,7 @@ public class QRCodeSearchController {
             @RequestParam(required = false) String format,
             @RequestParam(required = false) String contentType
     ) {
-        return metadataRepository.search(template, parcelId, path, createdAt, format, contentType);
+        return qrCodeMetadataService.search(template, parcelId, path, createdAt, format, contentType);
     }
 }
 

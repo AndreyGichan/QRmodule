@@ -1,22 +1,42 @@
-package by.belpost.qrmodule.model;
+package by.belpost.qrmodule.sevice.model;
 
+import by.belpost.qrmodule.model.QRCodeMetadata;
+import by.belpost.qrmodule.repository.QRCodeMetadataRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.stereotype.Repository;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public class QRCodeMetadataCustomRepositoryImpl implements QRCodeMetadataCustomRepository {
+@Data
+@AllArgsConstructor
+@Service
+public class QRCodeMetadataServiceImpl implements QRCodeMetadataService {
 
+    private final QRCodeMetadataRepository repository;
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Override
+    public void saveMetadata(String content, String path, String format,  String fileName, String contentType) {
+        QRCodeMetadata meta = new QRCodeMetadata();
+        meta.setContent(content);
+        meta.setPath(path);
+        meta.setFormat(format);
+        meta.setFileName(fileName);
+        meta.setContentType(contentType);
+        meta.setCreatedAt(LocalDateTime.now().withNano(0));
+        repository.save(meta);
+    }
 
     @Override
     public List<QRCodeMetadata> search(String template,
@@ -59,4 +79,3 @@ public class QRCodeMetadataCustomRepositoryImpl implements QRCodeMetadataCustomR
         return entityManager.createQuery(cq).getResultList();
     }
 }
-

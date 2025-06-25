@@ -1,10 +1,9 @@
 package by.belpost.qrmodule.controller;
 
-import by.belpost.qrmodule.dto.QRCodeRequest;
-import by.belpost.qrmodule.sevice.QRCodeMetadataService;
-import by.belpost.qrmodule.utils.QRCodeGenerator;
+import by.belpost.qrmodule.sevice.model.QRCodeMetadataServiceImpl;
+import by.belpost.qrmodule.sevice.app.QRCodeGeneratorServiceImpl;
 import com.google.zxing.WriterException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -17,12 +16,16 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/qrcodes")
 public class QRCodeController {
-    @Autowired
-    private QRCodeMetadataService metadataService;
 
+    private final QRCodeMetadataServiceImpl metadataService;
+    private final QRCodeGeneratorServiceImpl generatorService;
+
+
+    //TODO - в контроллерах не должно быть лишней логики кроме вызова метода сервиса
     @PostMapping(value = "/generate", consumes = {"multipart/form-data"})
     public ResponseEntity<String> generateQRCode(
             @RequestParam("content") String content,
@@ -34,7 +37,7 @@ public class QRCodeController {
     ) {
         try {
 
-            Path filePath = QRCodeGenerator.generateCustomQRCode(
+            Path filePath = generatorService.generateCustomQRCode(
                     content,
                     format,
                     fileName,

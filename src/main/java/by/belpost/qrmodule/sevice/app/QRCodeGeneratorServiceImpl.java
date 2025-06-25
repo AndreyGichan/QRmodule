@@ -1,4 +1,4 @@
-package by.belpost.qrmodule.utils;
+package by.belpost.qrmodule.sevice.app;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -13,6 +13,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -20,17 +21,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QRCodeGenerator {
+@Service
+public class QRCodeGeneratorServiceImpl implements QRCodeGeneratorService {
     private static void writeSVG(BitMatrix matrix, Path path, String foregroundHex, String backgroundHex) throws IOException {
         int width = matrix.getWidth();
         int height = matrix.getHeight();
 
+        //TODO - все подобные строки как эта ссылка должны быть ввиде переменной application.properties
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             writer.write(String.format(
                     "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%d\" height=\"%d\" shape-rendering=\"crispEdges\">",
@@ -68,7 +70,7 @@ public class QRCodeGenerator {
             return fallback.getRGB();
         }
     }
-    public static Path generateCustomQRCode(
+    public Path generateCustomQRCode(
             String content,
             String format,
             String fileName,
