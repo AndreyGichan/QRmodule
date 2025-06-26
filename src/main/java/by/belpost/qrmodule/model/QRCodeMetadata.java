@@ -1,7 +1,9 @@
 package by.belpost.qrmodule.model;
 import jakarta.persistence.*;
+import lombok.Data;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "qr_code_metadata")
 public class QRCodeMetadata {
@@ -14,7 +16,6 @@ public class QRCodeMetadata {
     private String format;
     private String fileName;
     private String path;
-    private String contentType;
     private LocalDateTime createdAt;
 
     public Long getId() {
@@ -55,14 +56,6 @@ public class QRCodeMetadata {
         this.path = path;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -70,4 +63,5 @@ public class QRCodeMetadata {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
 }

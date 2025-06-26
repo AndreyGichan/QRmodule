@@ -1,5 +1,6 @@
-package by.belpost.qrmodule.utils;
+package by.belpost.qrmodule.sevice.app;
 
+import by.belpost.qrmodule.sevice.model.QRCodeMetadataServiceImpl;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -8,11 +9,15 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import lombok.AllArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -20,21 +25,39 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class QRCodeGenerator {
-    private static void writeSVG(BitMatrix matrix, Path path, String foregroundHex, String backgroundHex) throws IOException {
+@Service
+public class QRCodeGeneratorServiceImpl implements QRCodeGeneratorService {
+    @Value("${qr.svg.xmlns}")
+    private String svgXmlns;
+
+    @Autowired
+    private QRCodeMetadataServiceImpl metadataService;
+
+    public String generateAndStoreQRCode(
+            String content,
+            String format,
+            String fileName,
+            String foregroundColor,
+            String backgroundColor,
+            MultipartFile logoFile
+    ) throws WriterException, IOException {
+        Path filePath = generateCustomQRCode(content, format, fileName, foregroundColor, backgroundColor, logoFile);
+        metadataService.saveMetadata(content, filePath.toString(), format, fileName);
+        return filePath.getFileName().toString();
+    }
+    private void writeSVG(BitMatrix matrix, Path path, String foregroundHex, String backgroundHex) throws IOException {
         int width = matrix.getWidth();
         int height = matrix.getHeight();
 
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             writer.write(String.format(
-                    "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%d\" height=\"%d\" shape-rendering=\"crispEdges\">",
-                    width, height));
+                    "<svg xmlns=\"%s\" width=\"%d\" height=\"%d\" shape-rendering=\"crispEdges\">",
+                    svgXmlns, width, height));
             writer.write(String.format("<rect width=\"100%%\" height=\"100%%\" fill=\"%s\"/>", backgroundHex));
 
             for (int y = 0; y < height; y++) {
@@ -68,7 +91,7 @@ public class QRCodeGenerator {
             return fallback.getRGB();
         }
     }
-    public static Path generateCustomQRCode(
+    public Path generateCustomQRCode(
             String content,
             String format,
             String fileName,

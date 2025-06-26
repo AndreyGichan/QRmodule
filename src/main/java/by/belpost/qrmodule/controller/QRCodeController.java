@@ -1,8 +1,6 @@
 package by.belpost.qrmodule.controller;
 
-import by.belpost.qrmodule.dto.QRCodeRequest;
-import by.belpost.qrmodule.sevice.QRCodeMetadataService;
-import by.belpost.qrmodule.utils.QRCodeGenerator;
+import by.belpost.qrmodule.sevice.app.QRCodeGeneratorServiceImpl;
 import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -17,11 +15,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
 @RestController
 @RequestMapping("/qrcodes")
 public class QRCodeController {
+
     @Autowired
-    private QRCodeMetadataService metadataService;
+    private QRCodeGeneratorServiceImpl generatorService;
 
     @PostMapping(value = "/generate", consumes = {"multipart/form-data"})
     public ResponseEntity<String> generateQRCode(
@@ -33,17 +33,10 @@ public class QRCodeController {
             @RequestPart(value = "logo", required = false) MultipartFile logoFile
     ) {
         try {
-
-            Path filePath = QRCodeGenerator.generateCustomQRCode(
-                    content,
-                    format,
-                    fileName,
-                    foregroundColor,
-                    backgroundColor,
-                    logoFile
+            String fileNameResult = generatorService.generateAndStoreQRCode(
+                    content, format, fileName, foregroundColor, backgroundColor, logoFile
             );
-            metadataService.saveMetadata(content, filePath.toString(), format, fileName, "text");
-            return ResponseEntity.ok(filePath.getFileName().toString());
+            return ResponseEntity.ok(fileNameResult);
         } catch (WriterException | IOException e) {
             return ResponseEntity.internalServerError().body("Ошибка при генерации QR-кода: " + e.getMessage());
         }

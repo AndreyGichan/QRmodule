@@ -1,30 +1,50 @@
-package by.belpost.qrmodule.model;
+package by.belpost.qrmodule.sevice.model;
 
+import by.belpost.qrmodule.model.QRCodeMetadata;
+import by.belpost.qrmodule.repository.QRCodeMetadataRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.springframework.stereotype.Repository;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public class QRCodeMetadataCustomRepositoryImpl implements QRCodeMetadataCustomRepository {
+@Data
+@Service
+public class QRCodeMetadataServiceImpl implements QRCodeMetadataService {
+
+    @Autowired
+    private QRCodeMetadataRepository repository;
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Override
+    public void saveMetadata(String content, String path, String format,  String fileName) {
+        QRCodeMetadata meta = new QRCodeMetadata();
+        meta.setContent(content);
+        meta.setPath(path);
+        meta.setFormat(format);
+        meta.setFileName(fileName);
+        meta.setCreatedAt(LocalDateTime.now().withNano(0));
+        repository.save(meta);
+    }
 
     @Override
     public List<QRCodeMetadata> search(String template,
                                        Integer parcelId,
                                        String path,
                                        LocalDate createdAt,
-                                       String format,
-                                       String contentType) {
+                                       String format) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<QRCodeMetadata> cq = cb.createQuery(QRCodeMetadata.class);
         Root<QRCodeMetadata> root = cq.from(QRCodeMetadata.class);
@@ -51,12 +71,7 @@ public class QRCodeMetadataCustomRepositoryImpl implements QRCodeMetadataCustomR
             predicates.add(cb.equal(cb.lower(root.get("format")), format.toLowerCase()));
         }
 
-        if (contentType != null && !contentType.isBlank()) {
-            predicates.add(cb.equal(cb.lower(root.get("contentType")), contentType.toLowerCase()));
-        }
-
         cq.where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(cq).getResultList();
     }
 }
-
