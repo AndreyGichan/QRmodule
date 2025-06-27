@@ -46,6 +46,11 @@ public class QRCodeGeneratorServiceImpl implements QRCodeGeneratorService {
             String backgroundColor,
             MultipartFile logoFile
     ) throws WriterException, IOException {
+        if (fileName == null || fileName.isBlank()) {
+            fileName = "qr_" + System.currentTimeMillis();
+        } else {
+            fileName = fileName.replaceAll("[^a-zA-Z0-9а-яА-Я]", "_");
+        }
         Path filePath = generateCustomQRCode(content, format, fileName, foregroundColor, backgroundColor, logoFile);
         metadataService.saveMetadata(content, filePath.toString(), format, fileName);
         return filePath.getFileName().toString();
