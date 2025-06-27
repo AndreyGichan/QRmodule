@@ -1,7 +1,7 @@
 package by.belpost.qrmodule;
 
 import by.belpost.qrmodule.controller.QRCodeController;
-import by.belpost.qrmodule.sevice.app.QRCodeGeneratorServiceImpl;
+import by.belpost.qrmodule.service.app.QRCodeGeneratorServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

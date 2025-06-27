@@ -1,4 +1,4 @@
-package by.belpost.qrmodule.sevice.app;
+package by.belpost.qrmodule.service.app;
 
 import com.google.zxing.WriterException;
 import org.springframework.web.multipart.MultipartFile;

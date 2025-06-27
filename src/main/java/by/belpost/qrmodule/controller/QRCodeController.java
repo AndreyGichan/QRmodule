@@ -1,8 +1,9 @@
 package by.belpost.qrmodule.controller;
 
-import by.belpost.qrmodule.sevice.app.QRCodeGeneratorServiceImpl;
+import by.belpost.qrmodule.service.app.QRCodeGeneratorServiceImpl;
 import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,8 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/qrcodes")
 public class QRCodeController {
-
+    @Value("${qr.code.dir}")
+    private String qrCodeDir;
     @Autowired
     private QRCodeGeneratorServiceImpl generatorService;
 
@@ -44,7 +46,7 @@ public class QRCodeController {
 
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadQRCode(@RequestParam String fileName) throws IOException {
-        Path filePath = Paths.get("D:/javaProjects/qrmodule/qrcodes/").resolve(fileName).normalize();
+        Path filePath = Paths.get(qrCodeDir).resolve(fileName).normalize();
         Resource resource = new UrlResource(filePath.toUri());
 
         if (!resource.exists()) {

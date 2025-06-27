@@ -1,6 +1,6 @@
-package by.belpost.qrmodule.sevice.app;
+package by.belpost.qrmodule.service.app;
 
-import by.belpost.qrmodule.sevice.model.QRCodeMetadataServiceImpl;
+import by.belpost.qrmodule.service.model.QRCodeMetadataServiceImpl;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -9,7 +9,6 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import lombok.AllArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -34,7 +33,8 @@ import java.util.Map;
 public class QRCodeGeneratorServiceImpl implements QRCodeGeneratorService {
     @Value("${qr.svg.xmlns}")
     private String svgXmlns;
-
+    @Value("${qr.code.dir}")
+    private String qrCodePath;
     @Autowired
     private QRCodeMetadataServiceImpl metadataService;
 
@@ -105,7 +105,6 @@ public class QRCodeGeneratorServiceImpl implements QRCodeGeneratorService {
             MultipartFile logoFile
     ) throws WriterException, IOException {
 
-        String qrCodePath = "D:/javaProjects/qrmodule/qrcodes/";
         Files.createDirectories(Path.of(qrCodePath));
 
         String ext = (format == null || format.isEmpty()) ? "png" : format.toLowerCase();

@@ -1,9 +1,7 @@
 package by.belpost.qrmodule.controller;
 
 import by.belpost.qrmodule.model.QRCodeMetadata;
-import by.belpost.qrmodule.repository.QRCodeMetadataRepository;
-import by.belpost.qrmodule.sevice.model.QRCodeMetadataServiceImpl;
-import lombok.AllArgsConstructor;
+import by.belpost.qrmodule.service.model.QRCodeMetadataServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;

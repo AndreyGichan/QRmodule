@@ -1,4 +1,4 @@
-package by.belpost.qrmodule.sevice.model;
+package by.belpost.qrmodule.service.model;
 
 import by.belpost.qrmodule.model.QRCodeMetadata;
 

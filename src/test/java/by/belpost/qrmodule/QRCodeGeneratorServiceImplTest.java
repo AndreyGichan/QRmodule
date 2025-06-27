@@ -1,6 +1,6 @@
 package by.belpost.qrmodule;
 
-import by.belpost.qrmodule.sevice.app.QRCodeGeneratorServiceImpl;
+import by.belpost.qrmodule.service.app.QRCodeGeneratorServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

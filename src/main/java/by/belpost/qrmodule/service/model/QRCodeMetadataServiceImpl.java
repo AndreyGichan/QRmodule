@@ -1,4 +1,4 @@
-package by.belpost.qrmodule.sevice.model;
+package by.belpost.qrmodule.service.model;
 
 import by.belpost.qrmodule.model.QRCodeMetadata;
 import by.belpost.qrmodule.repository.QRCodeMetadataRepository;
@@ -8,7 +8,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
